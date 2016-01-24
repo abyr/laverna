@@ -1,12 +1,16 @@
+/**
+ * Copyright (C) 2015 Laverna project Authors.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ */
 /*global define*/
 define([
     'underscore',
     'backbone',
-    'migrations/note',
-    'collections/removed',
-    'apps/encryption/auth',
-    'indexedDB'
-], function (_, Backbone, NotesDB, Removed, getAuth) {
+    'dompurify'
+], function(_, Backbone, Purify) {
     'use strict';
 
     /**
@@ -16,28 +20,38 @@ define([
 
         idAttribute: 'id',
 
-        database  : NotesDB,
+        profileId : 'notes-db',
         storeName : 'notes',
 
         defaults: {
+            'type'          : 'notes',
             'id'            :  undefined,
             'title'         :  '',
             'content'       :  '',
             'taskAll'       :  0,
             'taskCompleted' :  0,
-            'created'       :  Date.now(),
-            'updated'       :  Date.now(),
-            'notebookId'    :  0,
+            'created'       :  0,
+            'updated'       :  0,
+            'notebookId'    :  '0',
             'tags'          :  [],
             'isFavorite'    :  0,
             'trash'         :  0,
-            'synchronized'  :  0,
-            'images'        :  []
+            'files'         :  []
         },
 
-        validate: function (attrs) {
+        encryptKeys: [
+            'title',
+            'content'
+        ],
+
+        validate: function(attrs) {
+            // It's not neccessary to validate when a model is about to be removed
+            if (attrs.trash && Number(attrs.trash) === 2) {
+                return;
+            }
+
             var errors = [];
-            if (attrs.title === '') {
+            if (!_.isUndefined(attrs.title) && !attrs.title.trim().length) {
                 errors.push('title');
             }
 
@@ -46,69 +60,38 @@ define([
             }
         },
 
-        initialize: function () {
-            this.on('update:any', this.updateDate);
-            this.on('setFavorite', this.setFavorite);
-
-            if (this.isNew()) {
-                this.set('created', Date.now());
-                this.updateDate();
-            }
-        },
-
-        encrypt: function (data) {
-            var auth = getAuth();
-            data = data || this.toJSON();
-
-            this.set('title', auth.encrypt(data.title));
-            this.set('content', auth.encrypt(data.content));
-            this.set('synchronized', 0);
-        },
-
-        decrypt: function () {
-            var data = this.toJSON(),
-                auth = getAuth();
-
-            data.title = auth.decrypt(data.title);
-            data.content = auth.decrypt(data.content);
-            return data;
+        initialize: function() {
         },
 
         /**
          * Note's last modified time
          */
-        updateDate: function () {
+        updateDate: function() {
             this.set('updated', Date.now());
             this.setSync();
         },
 
-        /**
-         * Saves model's id for sync purposes, then destroys it
-         */
-        destroySync: function () {
-            return new Removed().newObject(this, arguments);
+        toggleFavorite: function() {
+            return {isFavorite: (this.get('isFavorite') === 1) ? 0 : 1};
         },
 
-        next: function () {
-            if (this.collection) {
-                return this.collection.at(this.collection.indexOf(this) + 1);
-            }
-        },
-
-        prev: function () {
-            if (this.collection) {
-                return this.collection.at(this.collection.indexOf(this) - 1);
-            }
-        },
-
-        setFavorite: function () {
-            var isFavorite = (this.get('isFavorite') === 1) ? 0 : 1;
-            this.trigger('update:any');
-            this.save({'isFavorite': isFavorite});
-        },
-
-        setSync: function () {
+        setSync: function() {
             this.set('synchronized', 0);
+        },
+
+        /**
+         * Purify user inputs
+         */
+        setEscape: function(data) {
+            if (data.title) {
+                data.title = _.escape(_.unescape(data.title));
+            }
+            if (data.content) {
+                data.content = Purify.sanitize(data.content);
+            }
+
+            this.set(data);
+            return this;
         }
 
     });
