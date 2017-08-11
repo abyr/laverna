@@ -43,7 +43,7 @@
     "Encryption parameters": "Šifrēšanas parametri",
     "Encryption Password": "Šifrēšanas parole",
     "Salt": "Sāls",
-    "Random": "Nejaušs",
+    "Random": "Nejauša",
     "Key size": "Atslēgas garums",
     "Strengthen by a factor of": "Stiprināt par koeficientu",
     "Authentication strength": "Autentifikācijas stiprums",
@@ -56,7 +56,7 @@
     "Navigation": "Navigācija",
     "navigateTop": "Uz augšu",
     "navigateBottom": "Uz leju",
-    "Jump": "Pārklēkt",
+    "Jump": "Pārlēkt",
     "jumpInbox": "Iet uz iesūtni",
     "jumpNotebook": "Iet uz klažu sarakstu",
     "jumpFavorite": "Iet uz piezīmju izlasi",
@@ -80,7 +80,7 @@
     "List of contributors": "Līdzstrādnieku saraksts",
     "List of all used libraries": "Izmantoto koda bibliotēku saraksts",
     "Are you sure?": "Vai esat pārliecināts/-a?",
-    "You have unsaved changes.": "Jums ir nesaglabātas izmaiņas.",
+    "You have unsaved changes": "Jums ir nesaglabātas izmaiņas.",
     "Dropbox API key": "Dropbox API atslēga",
     "Required": "Obligāts",
     "Optional": "Neobligāts",
@@ -93,19 +93,19 @@
     "Sync": "Sinhronizēt",
     "Profiles": "Profili",
     "Import": "Importēt",
-    "Import & export": "Importēt un eksportēt",
+    "Transfer data": "Importēt un eksportēt",
     "Import settings": "Importa iestatījumi",
     "Export settings": "Eksporta iestatījumi",
     "Wrong format": "Nepareizs formāts",
     "useDefaultConfigs": "Izmantot iestatījumus no noklusējuma profila",
-    "File chould be in json format": "Failam vajag būt JSON formātā",
+    "File should be in json format": "Failam vajag būt JSON formātā",
     "Close": "Aizvērt",
     "Hyperlink": "Hipersaite",
     "Editor": "Redaktors",
     "Preview": "Priekšskatījums",
     "Download": "Lejupielāde",
     "encryption": {
-        "wait": "Lūdzu uzgaidīt līdz šifrēšana būs pabeigta",
+        "wait": "Lūdzu uzgaidīt, līdz šifrēšana būs pabeigta",
         "error": "Šifrēšanas kļūda",
         "errorConfirm": "Kļūda šifrējot datus.\r\r Ja Jūs mainījāt šifrēšanas iestātījumus citā pārlūkā, **atjauniniet Jūsu iestatījumus** arī šajā pārlūkā vai arī mēģiniet importēt iestatījumus.\r\r Ja tas neko nemaina, **mēģiniet ielogoties** atkal.",
         "errorConfirmSettings": "Mainīt šifrēšanas parametrus",
@@ -113,7 +113,7 @@
         "backup": {
             "title": "Datu rezerves kopija",
             "content": "Lūdzu, pirms ejiet uz nākamo soli, lejupielādējiet Jūsu rezerves kopiju. Tā satur atšifrētus iepriekšējos datus un mainītos profilus. Glabājiet to drošā vietā.",
-            "next": "Turpināt nelejupielādējot rezerves kopiju"
+            "next": "Turpināt, nelejupielādējot rezerves kopiju"
         },
         "state": {
             "decrypt": "Atšifrē visu",
@@ -122,7 +122,7 @@
         }
     },
     "profile": {
-        "confirm remove": "Profils **__profile__** tiks noņemts ar visiem datiem, tai skaitā piezīmēm, tagiem un piezīmju grāmatiņām. Šī darbība ir neatgriezeniska!",
+        "confirm remove": "Profils **{{profile}}** tiks noņemts ar visiem datiem, tai skaitā piezīmēm, tagiem un piezīmju grāmatiņām. Šī darbība ir neatgriezeniska!",
         "type name": "Ierakstiet profila vārdu"
     },
     "files": {
@@ -132,8 +132,8 @@
         "attachImage": "Pievienot kā attēlu"
     },
     "notes": {
-        "confirm trash": "Piezīme **__title__** nonāks atkritnē.",
-        "confirm remove": "Piezīme**__title__** tiks izdzēsta **uz visiem laikiem**!",
+        "confirm trash": "Piezīme **{{title}}** nonāks atkritnē.",
+        "confirm remove": "Piezīme**{{title}}** tiks izdzēsta **uz visiem laikiem**!",
         "create and attach": "Izveidot jaunu piezīmi un pievienot tās saiti",
         "create": "Izveidot jaunu piezīmi",
         "hyperlink-dialog": "Piezīmes vai URL nosaukums"
@@ -143,7 +143,7 @@
         "add": "Pievienot jaunu kladi",
         "edit": "Rediģēt kladi",
         "name": "Lūdzu, sniedziet kladei nosaukumu",
-        "confirm remove": "Klade **__name__** tiks izdzēsta **uz visiem laikiem**!",
+        "confirm remove": "Klade **{{name}}** tiks izdzēsta **uz visiem laikiem**!",
         "remove with notes": "Jā, izdzēst ar pievienotajām piezīmēm",
         "remove": "Jā, izdzēst"
     },
@@ -151,7 +151,7 @@
         "name": "Taga nosaukums ir obligāts",
         "add": "Pievienot jaunu tagu",
         "edit": "Rediģēt tagu",
-        "confirm remove": "Tags **__name__** tiks dzēsts **uz visiem laikiem**!"
+        "confirm remove": "Tags **{{name}}** tiks dzēsts **uz visiem laikiem**!"
     },
     "dropbox": {
         "auth confirm": "Tagad Jūs tiksiet novirzīts/-a uz **Dropbox** autorizācijas lapu.\r> Lūdzu noklikšķiniet **OK** pogu.",
@@ -163,6 +163,6 @@
         "firststart next": "Ja nekad neesat lietojis/-usi Laverna līdz šim, klikšķiniet uz 'nākamā' pogas, lai sāktu instalācijas procesu.",
         "firststart encryption": "Ja vēlaties izmantot šifrēšanu, lūdzu sniedziet šifrēšans paroli.",
         "firststart sync": "Tā kā mēs neglabājam jebkādus datus mūsu serveros, Jums vajag ieslēgt sinhronizāciju ar vienu no no adapteriem lai varētu skatīt savas piezīmes arī uz citām ierīcēm.",
-        "firststart backup": "Viss ir gandrīz gatavs. Jūs varat lejupielādēt savu iestatījumu rezerves kopiju un turpināt uz nākamo soli."
+        "firststart backup": "Viss ir gandrīz gatavs. Jūs varat lejupielādēt savu iestatījumu rezerves kopiju un pāriet uz nākamo soli."
     }
 }

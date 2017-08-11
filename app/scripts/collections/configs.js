@@ -21,41 +21,49 @@ define([
         storeName : 'configs',
 
         configNames: {
-            'appVersion'        : '0.5.0',
-            'firstStart'        : '1',
-            'appProfiles'       : JSON.stringify(['notes-db']),
-            'appLang'           : '',
-            'cloudStorage'      : '0',
-            'dropboxKey'        : '',
-            'pagination'        : '10',
-            'sortnotebooks'     : 'name',
-            'editMode'          : 'preview',
-            'useDefaultConfigs' : '1',
+            'appVersion'         : '0.5.0',
+            'firstStart'         : '1',
+            'appProfiles'        : JSON.stringify(['notes-db']),
+            'appLang'            : '',
+            'cloudStorage'       : '0',
+            'dropboxKey'         : '',
+            'pagination'         : '10',
+            'sortnotes'          : 'created',
+            'sortnotebooks'      : 'name',
+            'navbarNotebooksMax' : '5',
+            'useDefaultConfigs'  : '1',
+
+            // Editor settings
+            'editMode'           : 'preview',
+            'indentUnit'         : '4',
 
             // Encryption settings
-            'encrypt'           : '0',
-            'encryptPass'       : '',
-            'encryptSalt'       : '',
-            'encryptIter'       : '10000',
-            'encryptTag'        : '128',
-            'encryptKeySize'    : '256',
-            'encryptBackup'     : {},
+            'encrypt'            : '0',
+            'encryptPass'        : '',
+            'encryptSalt'        : '',
+            'encryptIter'        : '10000',
+            'encryptTag'         : '128',
+            'encryptKeySize'     : '256',
+            'encryptBackup'      : {},
 
             // Keybindings
-            'navigateTop'       : 'k',
-            'navigateBottom'    : 'j',
-            'jumpInbox'         : 'g i',
-            'jumpNotebook'      : 'g n',
-            'jumpFavorite'      : 'g f',
-            'jumpRemoved'       : 'g t',
-            'jumpOpenTasks'     : 'g o',
-            'actionsEdit'       : 'e',
-            'actionsOpen'       : 'o',
-            'actionsRemove'     : 'shift+3',
-            'actionsRotateStar' : 's',
-            'appCreateNote'     : 'c',
-            'appSearch'         : '/',
-            'appKeyboardHelp'   : '?'
+            'navigateTop'        : 'k',
+            'navigateBottom'     : 'j',
+            'jumpInbox'          : 'g i',
+            'jumpNotebook'       : 'g n',
+            'jumpFavorite'       : 'g f',
+            'jumpRemoved'        : 'g t',
+            'jumpOpenTasks'      : 'g o',
+            'actionsEdit'        : 'e',
+            'actionsOpen'        : 'o',
+            'actionsRemove'      : 'shift+3',
+            'actionsRotateStar'  : 's',
+            'appCreateNote'      : 'c',
+            'appSearch'          : '/',
+            'appKeyboardHelp'    : '?',
+            'textEditor'         : 'default',
+
+            'modules'            : []
         },
 
         /**
@@ -135,7 +143,7 @@ define([
         resetFromJSON: function(jsonSettings) {
             var newConfs = [];
             _.forEach(jsonSettings, function(val, key) {
-                newConfs.push({name: key, val: val});
+                newConfs.push({name: key, value: val});
             });
             this.reset(newConfs);
         },

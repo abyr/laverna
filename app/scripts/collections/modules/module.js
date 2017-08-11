@@ -119,7 +119,7 @@ define([
          */
         save: function(model, data) {
             var self   = this,
-                set    = model.setEscape ? 'setEscape' : 'set',
+                setF   = model.setEscape ? 'setEscape' : 'set',
                 errors = model.validate(data);
 
             if (errors) {
@@ -128,11 +128,11 @@ define([
             }
 
             // Set new values
-            model[set](data);
+            model[setF](data);
 
             return new Q(self.encryptModel(model))
             .then(function(model) {
-                return new Q(model.save(model.attributes))
+                return new Q(model.save(model.attributes, {validate: false}))
                 .thenResolve(model);
             });
         },
@@ -192,20 +192,25 @@ define([
         saveRaw: function(data, options) {
             var self   = this,
                 model  = new (this.changeDatabase(options)).prototype.model(data),
-                errors = model.validate(data);
+                errors;
 
-            // Don't save data which can't be validated
-            if (errors) {
-                console.error('Validation failed:' + model.storeName, errors);
-                return Q.resolve();
-            }
+            return this.decryptModel(model)
+            .then(function() {
+                errors = model.validate(model.attributes);
 
-            return this.save(model, data)
-            .then(this.decryptModel)
-            .then(function(model) {
-                self.vent.trigger('update:model', model);
-                self.vent.trigger('synced:' + model.id, model);
-                return model;
+                // Don't save data which can't be validated
+                if (errors) {
+                    console.error('Validation failed:' + model.storeName, errors);
+                    return;
+                }
+
+                return self.save(model, data)
+                .then(self.decryptModel)
+                .then(function(model) {
+                    self.vent.trigger('update:model', model);
+                    self.vent.trigger('synced:' + model.id, model);
+                    return model;
+                });
             });
         },
 
@@ -332,11 +337,17 @@ define([
 
             return new Q(collection.fetch(options))
             .then(function() {
+
                 // Return in decrypted format
                 if (!options.encrypt) {
                     return self.decryptModels(collection.fullCollection || collection)
+                    .then(function() {
+                        collection.trigger('decrypted');
+                        return;
+                    })
                     .thenResolve(collection);
                 }
+
                 return collection;
             });
         },
@@ -350,12 +361,13 @@ define([
                 return false;
             }
 
-            var configs = Radio.request('configs', 'get:object');
+            var configs = Radio.request('configs', 'get:object'),
+                backup  = {encrypt: configs.encryptBackup.encrypt || 0};
             model       = model || this.Collection.prototype.model.prototype;
 
             return (
-                model.encryptKeys &&
-                (Number(configs.encrypt) || Number(configs.encryptBackup.encrypt))
+                !_.isUndefined(model.encryptKeys) &&
+                (Number(configs.encrypt) || Number(backup.encrypt)) === 1
             );
         },
 
@@ -367,10 +379,7 @@ define([
                 return new Q(model);
             }
 
-            return this.decryptModel(model)
-            .then(function(model) {
-                return Radio.request('encrypt', 'encrypt:model', model);
-            });
+            return Radio.request('encrypt', 'encrypt:model', model);
         },
 
         /**

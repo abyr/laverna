@@ -1,69 +1,69 @@
-/* global define, requirejs, mocha, chai, mochaPhantomJS */
-define([
+/* global mocha, requirejs */
+requirejs([
+    'chai',
     'underscore',
-    'jquery',
     'chai-jquery',
-    'i18next',
-    'helpers/i18next',
-    'bootstrap'
-], function(_, $, chaiJquery) {
+    'chai-promise',
+    'sinon-chai',
+    'helpers/radio.shim',
+], function(chai, _, chaiJquery, chaiAsPromised, sinon) {
     'use strict';
 
-    var tests = [
-        // Classes
-        'spec/classes/encryption',
-
-        // Models
-        // 'spec/models/note',
-        // 'spec/models/notebook',
-
-        // Collections
-        // 'spec/collections/notes',
-
-        // Libs
-        // 'spec/libs/tags',
-
-        // Helpers
-        // 'spec/helpers/storage',
-        // 'spec/helpers/configs',
-        // 'spec/helpers/uri',
-        // 'spec/helpers/sync/sync',
-
-        // Core
-        // 'spec/app.js',
-
-        // Modules
-        // 'spec/apps/confirm/test',
-        'spec/apps/encryption/test',
-        // 'spec/apps/help/test',
-        // 'spec/apps/navbar/test',
-        // 'spec/apps/notebooks/test',
-        // 'spec/apps/notes/test',
-        // 'spec/apps/settings/test'
-    ];
-
-    // Setup
+    // Setup Mocha and Chai
+    mocha.setup('bdd');
     mocha.bail(false);
     chai.use(chaiJquery);
+    chai.use(chaiAsPromised);
+    chai.use(sinon);
 
-    // Underscore template
-    _.templateSettings = {
-        interpolate: /\{\{(.+?)\}\}/g,
-        evaluate: /<%([\s\S]+?)%>/g
-    };
+    // Make `expect` and `should` globally available
+    window.expect = chai.expect;
+    window.should = chai.should();
 
-    // Run tests when DOM is ready
-    $(function() {
-        requirejs(tests, function() {
-            if (window.mochaPhantomJS) {
-                console.log('It is PhantomJS');
+    requirejs([
 
-                // Run tests
-                mochaPhantomJS.run();
-            }
-            else {
-                mocha.run();
-            }
-        });
+        // Core
+        'spec/app',
+        'spec/moduleLoader',
+        'spec/initializers',
+        'spec/backbone.sync',
+
+        // Helpers
+        'spec/helpers/db',
+        'spec/helpers/i18next',
+        'spec/helpers/storage',
+        'spec/helpers/underscore-util',
+        'spec/helpers/uri',
+
+        // Models
+        'spec/models/note',
+        'spec/models/notebook',
+        'spec/models/tag',
+        'spec/models/file',
+        'spec/models/config',
+
+        // Collections
+        'spec/collections/notes',
+        'spec/collections/notebooks',
+        'spec/collections/tags',
+        'spec/collections/configs',
+        'spec/collections/pageable',
+
+        // Collection modules
+        'spec/collections/modules/notes',
+        'spec/collections/modules/notebooks',
+        'spec/collections/modules/tags',
+        'spec/collections/modules/files',
+        'spec/collections/modules/configs',
+        'spec/collections/modules/module',
+
+    ], function() {
+        if (window.__karma__) {
+            return window.__karma__.start();
+        }
+
+        mocha.reporter('html');
+        (window.mochaPhantomJS || mocha).run();
     });
+
 });

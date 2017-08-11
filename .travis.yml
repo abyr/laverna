@@ -1,5 +1,6 @@
 language: node_js
 node_js:
+    - 6
     - 'stable'
 before_install:
     - npm install -g gulp bower jshint
@@ -11,7 +12,8 @@ script:
     - gulp build
     - gulp --root dist &
     - set -e
-    - gulp nightwatch --env ci; echo $?
+    - '[ "${TRAVIS_PULL_REQUEST}" = "false" ] && gulp nightwatch --env ci; echo $? || false'
+    - sleep 1
     - killall gulp
 after_failure:
     - killall gulp

@@ -42,10 +42,6 @@ define([
             this.$layoutBody.on('scroll', _.bind(this.onScroll, this));
         },
 
-        serializeData: function() {
-            return {content: _.escape(this.model.get('content'))};
-        },
-
         onDestroy: function() {
             this.$layoutBody.off('scroll');
             Radio.trigger('editor', 'view:destroy');

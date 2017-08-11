@@ -5,7 +5,7 @@ define([
     'marionette',
     'backbone.radio',
     'jszip',
-    'fileSaver'
+    'helpers/fileSaver'
 ], function(_, Q, Marionette, Radio, JSZip, fileSaver) {
     'use strict';
 
@@ -26,7 +26,8 @@ define([
 
             // Check file extension
             if (!this.options.files || !this.options.files.length ||
-               this.options.files[0].type !== 'application/zip') {
+               (this.options.files[0].type !== 'application/zip' &&
+               _.last(this.options.files[0].name.split('.')) !== 'zip')) {
                 return;
             }
 
@@ -148,11 +149,7 @@ define([
             return _.reduce(promises, Q.when, new Q())
             .then(function() {
                 var content = self.zip.generate({type: 'blob'});
-                fileSaver(content, 'laverna-backup.zip');
-
-                // Destroy this controller
-                self.zip = null;
-                self.destroy();
+                return self.saveToFile(content, 'laverna-backup.zip');
             });
         },
 
@@ -172,11 +169,7 @@ define([
             }, this);
 
             content = this.zip.generate({type: 'blob'});
-            fileSaver(content, 'laverna-backup.zip');
-
-            // Destroy this controller
-            this.zip = null;
-            this.destroy();
+            return this.saveToFile(content, 'laverna-backup.zip');
         },
 
         /**
@@ -220,6 +213,16 @@ define([
             self.zip.file(path + 'configs.json', JSON.stringify(configs));
 
             return;
+        },
+
+        saveToFile: function(data, fileName) {
+            return fileSaver(data, fileName)
+            .then(_.bind(function() {
+
+                // Destroy this controller
+                this.zip = null;
+                this.destroy();
+            }, this));
         },
 
     });

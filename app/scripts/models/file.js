@@ -8,9 +8,8 @@
 /* global define */
 define([
     'underscore',
-    'backbone',
-    'dompurify'
-], function(_, Backbone, Purify) {
+    'backbone'
+], function(_, Backbone) {
     'use strict';
 
     /**
@@ -48,14 +47,9 @@ define([
             }
         },
 
-        updateDate: function() {
-            this.set('updated', Date.now());
-            this.set('synchronized', 0);
-        },
-
         setEscape: function(data) {
             if (data.name) {
-                data.name = Purify.sanitize(data.name);
+                data.name = _.cleanXSS(data.name, true);
             }
 
             this.set(data);

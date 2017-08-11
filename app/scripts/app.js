@@ -5,26 +5,62 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-/*global define*/
+/*global define, Modernizr*/
 define([
-    'underscore',
+    'helpers/underscore-util',
     'jquery',
     'backbone',
     'backbone.radio',
     'devicejs',
     'regions/regionManager',
-    'marionette'
+    'marionette',
+    'i18next'
 ], function(_, $, Backbone, Radio, Device) {
     'use strict';
 
-    var App = new Backbone.Marionette.Application();
+    var App = new Backbone.Marionette.Application(),
+        env = {
+            isWebkit : ('WebkitAppearance' in document.documentElement.style),
+            isMobile : (Device.mobile() === true || Device.tablet() === true),
+            platform : 'browser',
+            ua       : window.navigator.userAgent
+        },
+        render;
 
-    App.isMobile = (Device.mobile() === true || Device.tablet() === true);
+    env.useWorkers = (Modernizr.webworkers && window.location.protocol !== 'file:' && !env.isWebkit);
+
+    if (/(palemoon|sailfish)/i.test(env.ua)) {
+        env.useWorkers = false;
+    }
+
+    if (env.isMobile) {
+        env.platform = 'mobile';
+    }
+    else if (window.requireNode) {
+        env.platform = 'electron';
+    }
 
     // Customize underscore template
     _.templateSettings = {
-        interpolate : /\{\{(.+?)\}\}/g,
-        evaluate    : /<%([\s\S]+?)%>/g
+        evaluate    : /<%([\s\S]+?)%>/g,
+        interpolate : /\{=([\s\S]+?)\}/g,
+        escape      : /\{\{([\s\S]+?)\}\}/g,
+    };
+
+    /**
+     * Overrite renderer in order to have access to
+     * additional functions in templates (like, i18n).
+     */
+    render = Backbone.Marionette.Renderer.render;
+
+    Backbone.Marionette.Renderer.render = function(template, data) {
+        data = _.extend(data || {}, {
+            i18n      : $.t,
+            cleanXSS  : _.cleanXSS,
+            stripTags : _.stripTags
+        });
+
+        return render(template, data);
     };
 
     // Start a module
@@ -33,7 +69,7 @@ define([
         if (App.currentApp === currentApp) { return; }
 
         // Stop previous app if current app is not modal
-        if (App.currentApp && (!currentApp.options.modal || App.isMobile)) {
+        if (App.currentApp && (!currentApp.options.modal || env.isMobile)) {
             App.currentApp.stop();
         }
 
@@ -42,6 +78,8 @@ define([
             App.channel.trigger('app:module', appName);
             currentApp.start(args);
         }
+
+        return true;
     };
 
     // Returns current app
@@ -54,8 +92,16 @@ define([
         $('.-loading').removeClass('-loading');
     });
 
-    Radio.reply('global', 'is:mobile', function() {
-        return App.isMobile;
+    Radio.reply('global', 'device', function(method) {
+        return Device[method]();
+    });
+
+    Radio.reply('global', 'platform', function() {
+        return env.platform;
+    });
+
+    Radio.reply('global', 'use:webworkers', function() {
+        return env.useWorkers;
     });
 
     App.on('before:start', function() {

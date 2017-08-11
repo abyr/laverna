@@ -10,10 +10,11 @@ define([
     'underscore',
     'marionette',
     'backbone.radio',
+    'behaviors/sidebar',
     'apps/notes/list/views/noteSidebarItem',
     'text!apps/notes/list/templates/sidebarList.html',
     'mousetrap'
-], function(_, Marionette, Radio, NoteSidebarItem, Tmpl, Mousetrap) {
+], function(_, Marionette, Radio, Behavior, NoteSidebarItem, Tmpl, Mousetrap) {
     'use strict';
 
     /**
@@ -31,6 +32,12 @@ define([
         childView          :  NoteSidebarItem,
         childViewContainer :  '.list',
         childViewOptions   :  {},
+
+        behaviors: {
+            SidebarBehavior: {
+                behaviorClass: Behavior
+            }
+        },
 
         ui: {
             pageNav  : '#pageNav',
@@ -110,6 +117,10 @@ define([
          * Gets next page's models and resets the collection
          */
         nextPage: function() {
+            if (this.ui.nextPage.hasClass('disabled')) {
+                return false;
+            }
+
             this.navigatePage(1);
             this.collection.getNextPage();
         },
@@ -118,6 +129,10 @@ define([
          * Gets previous page's models and resets the collection
          */
         previousPage: function() {
+            if (this.ui.prevPage.hasClass('disabled')) {
+                return false;
+            }
+
             this.navigatePage(-1);
             this.collection.getPreviousPage();
         },

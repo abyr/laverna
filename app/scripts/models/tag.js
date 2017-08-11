@@ -34,8 +34,13 @@ define([
 
         encryptKeys: ['name'],
 
-        initialize: function() {
-            // this.on('update:name', this.doEscape());
+        setEscape: function(data) {
+            if (data.name) {
+                data.name = _.cleanXSS(data.name, true);
+            }
+
+            this.set(data);
+            return this;
         },
 
         /**
@@ -57,15 +62,6 @@ define([
                 return errors;
             }
         },
-
-        updateDate: function() {
-            this.set('updated', Date.now());
-            this.set('synchronized', 0);
-        },
-
-        doEscape: function() {
-            this.set('name', _.escape(this.get('name')));
-        }
 
     });
 

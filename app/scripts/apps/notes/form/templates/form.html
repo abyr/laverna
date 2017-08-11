@@ -48,9 +48,10 @@
         <form class="editor--form form-horizontal col-xs-12" action="#" method="post">
             <div class="form-group">
                 <input id="editor--input--title" class="form-control -borderless" name="title"
-                    type="text" value="{{title}}" placeholder="{{ i18n('Title') }}" />
+                    type="text" value="{=cleanXSS(title, true)}" placeholder="{{ i18n('Title') }}" />
             </div>
         </form>
     </div>
     <div id="editor" class="layout--body editor--container"></div>
+	<footer id="editor--footer"></footer>
 </div>

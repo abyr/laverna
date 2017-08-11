@@ -31,11 +31,15 @@ module.exports = function(gulp, plugins) {
                 'helpers/db',
                 'helpers/migrate',
 
+                'backbone',
+                'backbone.radio',
+                'jquery',
                 'prism',
                 'q',
                 'underscore',
                 'localforage',
                 'dropbox',
+                'classes/sjcl',
                 'sjcl',
                 'remotestorage',
                 'tv4',
@@ -51,6 +55,12 @@ module.exports = function(gulp, plugins) {
                 'apps/settings/show/views/profiles',
                 'apps/settings/show/views/showView',
                 'apps/settings/show/views/sync',
+                'apps/settings/show/views/modules',
+
+                'apps/settings/module/app',
+                'apps/settings/module/controller',
+                'views/loader',
+
                 'backbone.sync',
                 'backbone.noworker.sync',
                 'modules/remotestorage/module',

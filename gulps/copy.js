@@ -16,6 +16,13 @@ module.exports = function(gulp, plugins) {
 
             // Copy
             gulp.src([
+                './app/scripts/modules/fs/**/*.*',
+                './app/scripts/modules/electronSearch/**/*.*',
+                './app/scripts/modules/fuzzySearch/**/*.*',
+                './app/scripts/modules/mathjax/**/*.*',
+
+                './app/scripts/modules/modules.json',
+
                 './app/bower_components/prism/themes/prism.css',
                 './app/images/**/*.+(png|jpg|gif|ico|icns)',
                 './app/docs/**',
@@ -34,6 +41,10 @@ module.exports = function(gulp, plugins) {
                 './app/scripts/modules/markdown/libs/markdown.js',
                 './app/scripts/modules/markdown/workers/markdown.js',
 
+                './app/scripts/workers/sjcl.js',
+                './app/scripts/classes/sjcl.js',
+                './app/scripts/classes/sjcl.worker.js',
+
                 './app/scripts/helpers/db.js',
                 './app/scripts/helpers/migrate.js',
                 './app/scripts/migrate.js',
@@ -48,6 +59,9 @@ module.exports = function(gulp, plugins) {
             gulp.src([
                 './app/bower_components/markdown-it*/dist/*.min.js',
 
+                './app/bower_components/backbone/backbone.js',
+                './app/bower_components/jquery/dist/jquery.js',
+                './app/bower_components/backbone.radio/build/backbone.radio.min.js',
                 './app/bower_components/prism/bundle.js',
                 './app/bower_components/requirejs/require.js',
                 './app/bower_components/modernizr/modernizr.js',

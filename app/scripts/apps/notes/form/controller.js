@@ -5,16 +5,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
  */
-/* global define */
+/* global define, requirejs */
 define([
     'underscore',
     'q',
     'jquery',
     'backbone.radio',
     'marionette',
+    'i18next',
     'apps/notes/form/views/formView',
     'apps/notes/form/views/notebooks'
-], function (_, Q, $, Radio, Marionette, View, NotebooksView) {
+], function (_, Q, $, Radio, Marionette, i18n, View, NotebooksView) {
     'use strict';
 
     /**
@@ -34,6 +35,11 @@ define([
 
         initialize: function(options) {
             this.options = options;
+
+            // Saves data before you change anything, in case you cancel editing
+            this.dataBeforeChange = null;
+            // Data should be deleted if user wants to cancel editing
+            this.deleteData = false;
 
             _.bindAll(this, 'show', 'redirect');
 
@@ -66,7 +72,7 @@ define([
             Radio.request('global', 'set:title', note.get('title'));
 
             // Use behaviours that are appropriate for a device.
-            if (Radio.request('global', 'is:mobile')) {
+            if (Radio.request('global', 'platform') === 'mobile') {
                 delete View.prototype.behaviors.Desktop;
             }
             else {
@@ -102,6 +108,17 @@ define([
             // Listen to view events
             this.listenTo(this.view, 'save', this.save);
             this.listenTo(this.view, 'cancel', this.showConfirm);
+
+            // Get data before any change is made
+            // so that it can be reset when you cancel editing
+            var self = this;
+            this.getContent()
+            .then(function(data) {
+                self.dataBeforeChange = data;
+            })
+            .fail(function(e) {
+                console.error('Error getting data on start', e);
+            });
         },
 
         save: function() {
@@ -109,7 +126,13 @@ define([
 
             return this.getContent()
             .then(function(data) {
-                return Radio.request('notes', 'save', self.view.model, data);
+                if (data.title === '') {
+                    var title = i18n.t('Untitled');
+                    data.title = title;
+                    Radio.request('global', 'set:title', title);
+                }
+
+                return Radio.request('notes', 'save', self.view.model, data, self.view.options.saveTags);
             })
             .fail(function(e) {
                 console.error('Error', e);
@@ -136,30 +159,50 @@ define([
 
             return this.getContent()
             .then(function(data) {
-                var model = self.view.model.pick('title', 'content', 'notebookId');
-                data  = _.pick(data, 'title', 'content', 'notebookId');
-
-                if (_.isEqual(model, data)) {
+                // Redirect if data wasn't changed
+                if (_.isEqual(self.dataBeforeChange, data)) {
                     return self.redirect();
                 }
 
-                Radio.request('Confirm', 'start', $.t('You have unsaved changes.'));
+                // User perhaps wants to cancel editing,
+                // if not, deleteData will be set false again in onConfirmCancel
+                self.deleteData = true;
+                Radio.request('Confirm', 'start', $.t('You have unsaved changes'));
             })
             .fail(function(e) {
                 console.error('form ShowConfirm', e);
             });
         },
 
+        // Called when the cancel dialog was accepted
         redirect: function() {
             if (!this.view.getOption('redirect')) {
                 return;
             }
 
             // Stop the module and navigate back
+            if(this.deleteData){
+                this.deleteData = false;
+                if (this.options.method === 'add') {
+                    // Delete the note if editing of a new note was canceled
+                    var self = this;
+                    requirejs(['apps/notes/remove/controller'], function(Controller) {
+                        new Controller(_.extend({},
+                                {id: self.view.model.id, deleteDirect: true}));
+                    });
+                }
+                else if (this.options.method === 'edit') {
+                    // Save the note without any change
+                    // if editing of an existing note was canceled
+                    Radio.request('notes', 'save', this.view.model, this.dataBeforeChange);
+                }
+            }
+
             Radio.trigger('notesForm', 'stop');
             Radio.request('uri', 'back');
         },
 
+        // Called when the cancel dialog was canceled
         onConfirmCancel: function() {
             // Rebind keybindings again because TW bootstrap modal overrites ESC.
             this.view.trigger('bind:keys');

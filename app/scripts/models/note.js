@@ -8,9 +8,8 @@
 /*global define*/
 define([
     'underscore',
-    'backbone',
-    'dompurify'
-], function(_, Backbone, Purify) {
+    'backbone'
+], function(_, Backbone) {
     'use strict';
 
     /**
@@ -41,7 +40,9 @@ define([
 
         encryptKeys: [
             'title',
-            'content'
+            'content',
+            'tags',
+            'tasks'
         ],
 
         validate: function(attrs) {
@@ -60,34 +61,20 @@ define([
             }
         },
 
-        initialize: function() {
-        },
-
-        /**
-         * Note's last modified time
-         */
-        updateDate: function() {
-            this.set('updated', Date.now());
-            this.setSync();
-        },
-
         toggleFavorite: function() {
             return {isFavorite: (this.get('isFavorite') === 1) ? 0 : 1};
-        },
-
-        setSync: function() {
-            this.set('synchronized', 0);
         },
 
         /**
          * Purify user inputs
          */
         setEscape: function(data) {
+
             if (data.title) {
-                data.title = _.escape(_.unescape(data.title));
+                data.title = _.cleanXSS(data.title, true);
             }
             if (data.content) {
-                data.content = Purify.sanitize(data.content);
+                data.content = _.cleanXSS(data.content, true);
             }
 
             this.set(data);

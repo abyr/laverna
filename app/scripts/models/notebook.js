@@ -56,28 +56,14 @@ define([
             }
         },
 
-        updateDate: function() {
-            this.set('updated', Date.now());
-            this.set('synchronized', 0);
-        },
-
-        addCount: function() {
-            if (this.get('id') === 0) {
-                return;
+        setEscape: function(data) {
+            if (data.name) {
+                data.name = _.cleanXSS(data.name, true);
             }
-            this.save({
-                'count': this.get('count') + 1
-            });
-        },
 
-        removeCount: function() {
-            if (this.get('id') === 0) {
-                return;
-            }
-            this.save({
-                'count': this.get('count') - 1
-            });
-        }
+            this.set(data);
+            return this;
+        },
 
     });
 

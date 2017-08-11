@@ -42,16 +42,25 @@ define([
          * @type object Backbone model
          * @type object new values
          */
-        saveModel: function(model, data) {
+        saveModel: function(model, data, saveTags) {
+			if(saveTags === undefined || saveTags === null){
+				saveTags = true;
+			}
             var saveFunc = _.bind(ModuleObject.prototype.saveModel, this);
 
-            // Before saving the model, add tags
-            return new Q(Radio.request('tags', 'add', data.tags || [], {
-                profile: model.profileId
-            }))
-            .then(function() {
-                return saveFunc(model, data);
-            });
+			if(saveTags){
+            	// Before saving the model, add tags
+				return new Q(Radio.request('tags', 'add', data.tags || [], {
+					profile: model.profileId
+				}))
+				.then(function() {
+					return saveFunc(model, data);
+				});
+			}
+
+			// Save model without tags
+			return saveFunc(model,data);
+
         },
 
         /**
@@ -140,14 +149,19 @@ define([
          * @type object options
          */
         getAll: function(options) {
-            var getAll = _.bind(ModuleObject.prototype.getAll, this);
+            var getAll    = _.bind(ModuleObject.prototype.getAll, this),
+                self      = this,
+                sortField = Radio.request('configs', 'get:config', 'sortnotes');
+
             options.filter = options.filter || 'active';
 
-            options.beforeSuccess = (
-                !Notes.prototype.conditions[options.filter] ? this._filterOnFetch : null
-            );
+            this.Collection.prototype.sortField = sortField;
 
-            return getAll(options);
+            return getAll(options)
+            .then(function(collection) {
+                self._filterOnFetch(collection, options);
+                return collection;
+            });
         },
 
         /**

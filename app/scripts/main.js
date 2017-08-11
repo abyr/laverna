@@ -40,7 +40,8 @@ requirejs.config({
         jquery                : '../bower_components/jquery/dist/jquery',
         q                     : '../bower_components/q/q',
         bootstrap             : '../bower_components/bootstrap/dist/js/bootstrap.min',
-        i18next               : '../bower_components/i18next/i18next.amd.withJQuery.min',
+        i18next               : '../bower_components/i18next/i18next',
+        i18nextXHRBackend     : '../bower_components/i18next-xhr-backend/i18nextXHRBackend',
 
         // Backbone
         underscore            : '../bower_components/underscore/underscore',
@@ -67,10 +68,11 @@ requirejs.config({
         'markdown-it-san'     : '../bower_components/markdown-it-sanitizer/dist/markdown-it-sanitizer.min',
         'markdown-it-hash'    : '../bower_components/markdown-it-hashtag/dist/markdown-it-hashtag.min',
         'markdown-it-math'    : '../bower_components/markdown-it-math/dist/markdown-it-math.min',
+        'markdown-it-imsize'  : '../bower_components/markdown-it-imsize/dist/markdown-it-imsize.min',
         'to-markdown'         : '../bower_components/to-markdown/src/to-markdown',
 
         // Others
-        dompurify             : '../bower_components/DOMPurify/src/purify',
+        xss                   : '../bower_components/xss/dist/xss',
         mathjax               : '../bower_components/MathJax/MathJax.js?config=TeX-AMS-MML_HTMLorMML',
         prettify              : '../bower_components/google-code-prettify/src/prettify',
         dropzone              : '../bower_components/dropzone/dist/dropzone-amd-module',
@@ -79,6 +81,8 @@ requirejs.config({
         fileSaver             : '../bower_components/FileSaver/FileSaver',
         enquire               : '../bower_components/enquire/dist/enquire.min',
         hammerjs              : '../bower_components/hammerjs/hammer',
+        jHammer               : '../bower_components/jquery-hammerjs/jquery.hammer',
+        fastclick             : '../bower_components/fastclick/lib/fastclick',
         devicejs              : '../bower_components/device.js/lib/device.min',
         jszip                 : '../bower_components/jszip/dist/jszip',
 
@@ -144,6 +148,9 @@ requirejs.config({
         },
         'prism/bundle': {
             exports: 'Prism'
+        },
+        xss: {
+            exports: 'filterXSS'
         },
         bootstrap: {
             deps: ['jquery']

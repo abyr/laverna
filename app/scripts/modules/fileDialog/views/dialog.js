@@ -8,12 +8,14 @@
 /* global define, Modernizr */
 define([
     'underscore',
+	'i18next',
     'marionette',
     'backbone.radio',
     'behaviors/modalForm',
     'dropzone',
-    'text!modules/fileDialog/templates/dialog.html'
-], function(_, Marionette, Radio, ModalForm, Dropzone, Tmpl) {
+    'text!modules/fileDialog/templates/dialog.html',
+    'text!modules/fileDialog/templates/dropzone.html'
+], function(_, i18n, Marionette, Radio, ModalForm, Dropzone, Tmpl, dropzoneTmpl) {
     'use strict';
 
     /**
@@ -65,7 +67,9 @@ define([
                     clickable       : true,
                     accept          : _.bind(this.getImage, this),
                     thumbnailWidth  : 100,
-                    thumbnailHeight : 100
+                    thumbnailHeight : 100,
+                    previewTemplate: dropzoneTmpl,
+					dictDefaultMessage: i18n.t('Drop files')
                 });
             }
         },

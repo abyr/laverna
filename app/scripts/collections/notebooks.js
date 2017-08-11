@@ -38,7 +38,11 @@ define([
         sortField: 'name',
 
         comparator: function(model) {
-            return -model.get(this.sortField);
+            if (this.sortField === 'name') {
+                return model.get(this.sortField);
+            } else {
+                return -model.get(this.sortField);
+            }
         },
 
         sortItOut: function() {
@@ -128,20 +132,6 @@ define([
                 return notebook.get('parentId') === '0';
             });
         },
-
-        /**
-         * Filter: only unencrypted, JSON data probably encrypted data
-         */
-        getUnEncrypted: function() {
-            return this.filter(function(notebook) {
-                try {
-                    JSON.parse(notebook.get('name'));
-                    return false;
-                } catch (e) {
-                    return true;
-                }
-            });
-        }
 
     });
 

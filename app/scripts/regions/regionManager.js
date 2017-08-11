@@ -1,6 +1,6 @@
 /**
  * Copyright (C) 2015 Laverna project Authors.
- * 
+ *
  * This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/.
@@ -17,7 +17,8 @@ define([
     /**
      * Main region manager
      */
-    var rm = new Marionette.RegionManager();
+    var rm    = new Marionette.RegionManager(),
+        $body = $('body');
 
     rm.addRegions({
         sidebarNavbar : '#sidebar--navbar',
@@ -36,6 +37,16 @@ define([
 
         rm.get(region).show(view);
         Radio.trigger('region', region + ':shown');
+    })
+    .reply('region:add', function(name, block) {
+
+        // The region already exists
+        if (rm.get(name)) {
+            return;
+        }
+
+        $body.append(block || '<div id="' + name + '"></div>');
+        rm.addRegion(name, '#' + name);
     })
     .reply('region:empty', function(region) {
         Radio.trigger('region', region + ':hidden');

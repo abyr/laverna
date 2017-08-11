@@ -1,4 +1,8 @@
 {
+    "ar": {
+        "name": "Arabic",
+        "nativeName": "العربية"
+    },
     "it": {
         "name": "Italian",
         "nativeName": "Italiano"
@@ -7,13 +11,21 @@
         "name": "Bosnian",
         "nativeName": "Bosnian"
     },
+    "cs": {
+        "name": "Czech",
+        "nativeName": "Čeština"
+    },
+    "da": {
+        "name": "Danish",
+        "nativeName": "Dansk"
+    },
     "de": {
         "name": "German",
         "nativeName": "Deutsch"
     },
     "de_ch": {
         "name": "Swiss german",
-        "nativeName": "Swiss german"
+        "nativeName": "Schwiizerdütsch"
     },
     "el": {
         "name": "Greek",
@@ -39,6 +51,10 @@
         "name": "Hindi",
         "nativeName": "Hindi"
     },
+    "ko": {
+        "name": "Korean",
+        "nativeName": "한국어"
+    },
     "mr_in": {
         "name": "Marathi",
         "nativeName": "Marathi"
@@ -55,9 +71,21 @@
         "name": "Norwegian Nynorsk",
         "nativeName": "Norsk nynorsk"
     },
+    "oc": {
+        "name": "Occitan",
+        "nativeName": "Occitan"
+    },
+    "lt": {
+      "name": "Lithuanian",
+      "nativeName": "Lietuvių"
+    },
     "lv": {
       "name": "Latvian",
-      "nativeName": "latviešu"
+      "nativeName": "Latviešu"
+    },
+    "pl": {
+        "name": "Polish",
+        "nativeName": "Polski"
     },
     "pt_br": {
         "name": "Portugisich (Brasilien)",
@@ -71,6 +99,10 @@
         "name": "Swedish",
         "nativeName": "Svenska"
     },
+    "sq": {
+        "name": "Albanian",
+        "nativeName": "Shqip"
+    },
     "tr": {
         "name": "Turkish",
         "nativeName": "Türkçe"
@@ -78,5 +110,9 @@
     "zh_cn": {
         "name": "Simplified Chinese",
         "nativeName": "Simplified Chinese"
+    },
+    "zh_tw": {
+        "name": "Traditional Chinese (Taiwan)",
+        "nativeName": "Traditional Chinese (Taiwan)"
     }
 }

@@ -7,9 +7,10 @@ define([
     'markdown-it-san',
     'markdown-it-hash',
     'markdown-it-math',
+    'markdown-it-imsize',
     'modules/markdown/libs/markdown-it-task',
     'modules/markdown/libs/markdown-it-file',
-], function(_, Q, MarkdownIt, Prism, sanitizer, hash, math, task, file) {
+], function(_, Q, MarkdownIt, Prism, sanitizer, hash, math, imsize, task, file) {
     'use strict';
 
     /**
@@ -44,6 +45,7 @@ define([
         configure: function() {
             this.md
             .use(sanitizer)
+            .use(imsize)
             .use(math, {
                 inlineOpen       : '$',
                 inlineClose      : '$',
@@ -57,10 +59,21 @@ define([
                     return '<div class="math block">$$' + tokens + '$$</div>';
                 },
             })
-            .use(hash)
+            .use(hash, {
+				hashtagRegExp: '[\\u0021-\\uFFFF\\w\\-]+|<3',
+				preceding: '^|\\s'
+				})
             .use(task.init)
             .use(file.init)
             ;
+
+            // Make table responsive
+            this.md.renderer.rules.table_open  = function() { // jshint ignore:line
+                return '<div class="table-responsive"><table>';
+            };
+            this.md.renderer.rules.table_close  = function() { // jshint ignore:line
+                return '</table></div>';
+            };
 
             this.md.renderer.rules.hashtag_open  = function(tokens, idx, f, env) { // jshint ignore:line
                 var tagName = tokens[idx].content.toLowerCase();
@@ -88,7 +101,7 @@ define([
             }
 
             return new Q(
-                this.md.render(model.content, env)
+                this.md.render(_.unescape(model.content), env)
             );
         },
 
@@ -96,6 +109,7 @@ define([
          * Toggle a task's status.
          */
         taskToggle: function(data) {
+            data.content = _.unescape(data.content);
             data.content = task.toggle(data);
 
             return this.parse(data.content)
@@ -111,7 +125,7 @@ define([
             var env = {};
 
             return new Q(
-                this.md.render(content, env)
+                this.md.render(_.unescape(content), env)
             )
             .then(function() {
                 env.tags    = env.tags ? _.uniq(env.tags) : [];

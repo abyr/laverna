@@ -26,8 +26,7 @@ define([
             pageSize     : 10,
             firstPage    : 0,
             currentPage  : 0,
-            totalRecords : 0,
-            comparator   : {'created' : 'desc', 'isFavorite' : 'desc'}
+            totalRecords : 0
         },
 
         conditions: {
@@ -39,37 +38,28 @@ define([
             }
         },
 
-        initialize: function() {
-        },
+        sortField: 'created',
 
-        comparator: function(model) {
-            return -model.get('created');
+        initialize: function() {
+            this.state.comparator = {};
+            this.state.comparator[this.sortField] = this.sortField === 'title' ? 'asc' : 'desc';
+            this.state.comparator.isFavorite = 'desc';
         },
 
         filterList: function(filter, options) {
-            filter = filter || 'active';
-            var cond = this.conditions[filter],
-                res;
-
-            if (cond) {
-                cond = (typeof cond === 'function' ? cond(options) : cond);
-                res = this.where(cond);
-            }
-            else if (this[filter + 'Filter']) {
-                res = this[filter + 'Filter'](options.query);
-            }
-            else {
+            if (!filter || !this[filter + 'Filter']) {
                 return;
             }
 
+            var res = this[filter + 'Filter'](options.query);
             return this.reset(res);
         },
 
         /**
          * Show notes with unfinished tasks
          */
-        taskFilter: function () {
-            return this.filter(function (note) {
+        taskFilter: function() {
+            return this.filter(function(note) {
                 return note.get('taskCompleted') < note.get('taskAll');
             });
         },
@@ -90,31 +80,16 @@ define([
         },
 
         /**
-         * Filter: only unencrypted, JSON data probably encrypted data
-         */
-        getUnEncrypted: function() {
-            return this.filter(function(note) {
-                try {
-                    JSON.parse(note.get('title'));
-                    return false;
-                } catch (e) {
-                    return true;
-                }
-            });
-        },
-
-        /**
          * Search
          */
         searchFilter: function(letters) {
-            if (letters === '') {
+            if (!letters || letters === '') {
                 return this;
             }
 
             var pattern = new RegExp(letters, 'gim');
 
             return this.filter(function(model) {
-                model = Radio.request('encrypt', 'decrypt:model', model);
                 pattern.lastIndex = 0;
                 return pattern.test(model.get('title')) || pattern.test(model.get('content'));
             });
@@ -128,6 +103,15 @@ define([
                 }
             });
             return fuse.search(text);
+        },
+
+        registerEvents: function() {
+            if (this.sortField === 'updated') {
+                // Sort the collection again when updated
+                this.listenTo(this, 'change:updated', this.sortItOut);
+            }
+
+            return this;
         }
 
     });

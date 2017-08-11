@@ -3,30 +3,28 @@ var gulp    = require('gulp'),
     pkg     = require('./package.json'),
     plugins = require('gulp-load-plugins')();
 
+plugins.del         = require('del');
+plugins.browserSync = require('browser-sync').create();
+
 function getTask(task) {
-    return require(`./gulps/${task}`)(gulp, plugins, pkg);
+    return require('./gulps/' + task)(gulp, plugins, pkg);
 }
 
 // Add Gulp tasks
 [
     'jshint' , 'jsonlint'   , 'mocha'       , 'nightwatch',
     'less'   , 'prism'      , 'require'     , 'electron'  ,
-    'htmlmin', 'cssmin'     , 'htmlManifest',
+    'htmlmin', 'cssmin'     , 'htmlManifest', 'mobile'    ,
     'copy'   , 'copyRelease', 'copyDist'    ,
-    'reload' , 'clean'      , 'npm'
+    'serve'  , 'clean'      , 'npm'
 ]
 .forEach(function(task) {
     var taskFun = getTask(task);
 
     // It has several tasks
-    if (typeof taskFun === 'object') {
-        for (var key in taskFun) {
-            gulp.task(task + ':' + key, taskFun[key]);
-        }
-        return;
+    if (typeof taskFun === 'function') {
+        gulp.task(task, taskFun);
     }
-
-    gulp.task(task, taskFun);
 });
 
 gulp.task('release:after', function() {
@@ -48,8 +46,8 @@ gulp.task('test', ['jsonlint', 'jshint', 'mocha']);
 gulp.task('build', plugins.sequence(
     'test',
     'clean:dist',
-    'prism',
-    ['less', 'copy', 'require', 'htmlmin', 'cssmin'],
+    ['prism', 'less'],
+    ['copy', 'require', 'htmlmin', 'cssmin'],
     'htmlManifest'
 ));
 
@@ -70,6 +68,6 @@ gulp.task('release', plugins.sequence(
  * ``gulp --root dist`` to serve dist folder.
  */
 gulp.task('default', plugins.sequence(
-    ['reload:less', 'prism'],
-    'reload:server'
+    ['less', 'prism'],
+    ['serve:start', 'serve:watch']
 ));
